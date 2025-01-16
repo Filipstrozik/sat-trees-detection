@@ -1,2 +1,6 @@
 /.DS_Store
 /.venv
+/checkpoints
+/checkpoints_copy
+/lightning_logs
+/models
