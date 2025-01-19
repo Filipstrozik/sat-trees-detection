@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import Literal
-
+from torch import Tensor
 import numpy as np
 import torch
 from torchvision.ops import boxes as box_ops
@@ -10,6 +10,28 @@ from matplotlib.axes import Axes
 from matplotlib.collections import EllipseCollection, PatchCollection
 from matplotlib.patches import Rectangle
 from ellipse_rcnn.utils.conics import ellipse_angle, conic_center, ellipse_axes
+from matplotlib.figure import Figure
+
+
+def plot_single_pred(
+    image: Tensor,
+    prediction,
+    min_score: float = 0.75,
+) -> Figure:
+    if isinstance(prediction, list):
+        if len(prediction) > 1:
+            raise ValueError(
+                "Multiple predictions detected. Please pass a single prediction."
+            )
+        prediction = prediction[0]
+    fig, ax = plt.subplots(1, 1, figsize=(10, 10))
+    fig.patch.set_alpha(0)
+    ax.imshow(image.permute(1, 2, 0), cmap="grey")
+    score_mask = prediction["scores"] > min_score
+
+    plot_ellipses(prediction["ellipse_matrices"][score_mask], ax=ax)
+
+    return fig
 
 
 def plot_ellipses(
